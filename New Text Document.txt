@@ -1,0 +1,18 @@
+pokemon0 	: name name-s png 5G
+pokemon1 	: x png 8G
+pokemon2 	: x png 5G
+pokemon3	: 00x-0y webp 8G weird
+pokemon4	: x png 4G
+pokemon5	: x png 4G
+pokemon6	: x png 4G whiteBG
+pokemon7	: x png 4G whiteBG
+pokemon8	: x png 4G
+pokemon9	: x png 2G
+poekmon10	: x png 3G
+pokemon11	: x png 3G
+pokemon12	: poke_capture_000x_00y_mf/uk_n_00000000_f_n/r png 8G
+pokemon13	: x png 8G
+pokemon14	: x png 5G
+pokemon15	: name png 8G
+pokemon16	: x x-gibberish png 8G
+
