@@ -3,25 +3,41 @@ import plotly.express as px
 import plotly.graph_objects as go
 import tensorflow as tf
 
-def load_data(directory='images/final/', batch_size=64, image_size=(128, 128)):
-    train_ds, val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-        directory,
-        batch_size=batch_size,
-        validation_split=0.2,
-        subset="both",
-        labels="inferred",
-        label_mode="categorical",
-        image_size=image_size,
-        crop_to_aspect_ratio=True,
-        interpolation="bilinear",
-        color_mode="rgba",
-        shuffle=True,
-        seed=905,
-    )
+def load_data(directory='images/final/', batch_size=64, image_size=(128, 128), GAN=False):
+    if not GAN :
+        train_ds, val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+            directory,
+            batch_size=batch_size,
+            validation_split=0.2,
+            subset="both",
+            labels="inferred",
+            label_mode="categorical",
+            image_size=image_size,
+            crop_to_aspect_ratio=True,
+            interpolation="bilinear",
+            color_mode="rgba",
+            shuffle=True,
+            seed=905,
+        )
+        class_names = train_ds.class_names
 
-    class_names = train_ds.class_names
-    
-    return train_ds, val_ds, class_names
+        return train_ds, val_ds, class_names
+    else:
+        train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+            directory,
+            batch_size=batch_size,
+            labels="inferred",
+            label_mode="categorical",
+            image_size=image_size,
+            crop_to_aspect_ratio=True,
+            interpolation="bilinear",
+            color_mode="rgba",
+            shuffle=True,
+            seed=905,
+        )
+        class_names = train_ds.class_names
+
+        return train_ds, class_names
 
 def plot_image(image, label, labels={}):
     fig = px.imshow(image, width=128, height=128)
@@ -221,8 +237,44 @@ def plot_family(pokemon):
         ),
     fig.show()
 
-# plot_family("Kirlia")
+flip_and_rotate = tf.keras.Sequential([
+    tf.keras.layers.experimental.preprocessing.RandomFlip("horizontal"),
+    tf.keras.layers.experimental.preprocessing.RandomRotation(0.1, fill_mode="constant", fill_value=255),
+])
 
+def preprocess_image(image, for_transfer_learning=False):
+    # print(image.shape)
+    alpha_channel = image[:, :, :, 3]
+    rgb_channels = image[:, :, :, :3]
+    alpha_bool = alpha_channel > 0
+    alpha_bool = tf.expand_dims(alpha_bool, axis=-1)
+    # print(alpha_bool.shape)
+    # print(rgb_channels.shape)
+    rgb_channels = tf.where(alpha_bool, rgb_channels, 255)
+    
+    # Normalize the pixel values to be between 0 and 1
+    if for_transfer_learning:
+        from tensorflow.keras.applications.efficientnet import preprocess_input
+        image = preprocess_input(rgb_channels)
+    else:
+        image = tf.cast(rgb_channels, tf.float32) / 255.0
+    
+    return image
 
+def prepare(ds, shuffle=False, augment=False):
+    ds = ds.map(lambda x, y: (preprocess_image(x, for_transfer_learning=True), y), num_parallel_calls=tf.data.AUTOTUNE)
+
+    # Use data augmentation only on the training set
+    if augment:
+        ds = ds.map(lambda x, y: (flip_and_rotate(x, training=True), y), num_parallel_calls=tf.data.AUTOTUNE)
+    
+    # Use buffered prefecting on all datasets
+    if shuffle:
+        ds = ds.shuffle(1000)
+
+    # ds = ds.batch(batch_size)
+    ds = ds.prefetch(buffer_size=tf.data.AUTOTUNE)
+
+    return ds
 
 
