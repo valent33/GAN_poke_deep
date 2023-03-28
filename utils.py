@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import tensorflow as tf
+import numpy as np
 
 def load_data(directory='images/final/', batch_size=64, image_size=(128, 128), GAN=False):
     if not GAN :
@@ -26,8 +27,7 @@ def load_data(directory='images/final/', batch_size=64, image_size=(128, 128), G
         train_ds = tf.keras.preprocessing.image_dataset_from_directory(
             directory,
             batch_size=batch_size,
-            labels="inferred",
-            label_mode="categorical",
+            labels=[1.0] * 13849,
             image_size=image_size,
             crop_to_aspect_ratio=True,
             interpolation="bilinear",
@@ -118,10 +118,13 @@ def plot_image(image, label, labels={}):
 
     fig.show()
 
-def plot_n_images(ds, n, class_names):
+def plot_n_images(ds, n, class_names, GAN=False):
     for image, label in ds.take(1):
+        if GAN:
+            image = image * 127.5 + 127.5
+            image = image.numpy().astype("uint8")
         for i in range(n):
-            print(image[i][0][0])
+            # print(image[i][0][0])
             print(image[i].shape)
             plot_image(image[i], class_names[int(tf.argmax(tf.reshape(label[i], [-1, 1]), axis=0))])
 
@@ -242,7 +245,7 @@ flip_and_rotate = tf.keras.Sequential([
     tf.keras.layers.experimental.preprocessing.RandomRotation(0.1, fill_mode="constant", fill_value=255),
 ])
 
-def preprocess_image(image, for_transfer_learning=False):
+def preprocess_image(image, GAN=False):
     # print(image.shape)
     alpha_channel = image[:, :, :, 3]
     rgb_channels = image[:, :, :, :3]
@@ -252,17 +255,18 @@ def preprocess_image(image, for_transfer_learning=False):
     # print(rgb_channels.shape)
     rgb_channels = tf.where(alpha_bool, rgb_channels, 255)
     
-    # Normalize the pixel values to be between 0 and 1
-    if for_transfer_learning:
+    if not GAN:
+        # Normalize the pixel values to be between 0 and 1
         from tensorflow.keras.applications.efficientnet import preprocess_input
         image = preprocess_input(rgb_channels)
     else:
-        image = tf.cast(rgb_channels, tf.float32) / 255.0
-    
+        # Normalize the pixel values to be between -1 and 1
+        image = (rgb_channels - 127.5) / 127.5
+
     return image
 
-def prepare(ds, shuffle=False, augment=False):
-    ds = ds.map(lambda x, y: (preprocess_image(x, for_transfer_learning=True), y), num_parallel_calls=tf.data.AUTOTUNE)
+def prepare(ds, shuffle=False, augment=False, GAN=False):
+    ds = ds.map(lambda x, y: (preprocess_image(x, GAN=GAN), y), num_parallel_calls=tf.data.AUTOTUNE)
 
     # Use data augmentation only on the training set
     if augment:
