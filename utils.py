@@ -27,7 +27,8 @@ def load_data(directory='images/final/', batch_size=64, image_size=(128, 128), G
         train_ds = tf.keras.preprocessing.image_dataset_from_directory(
             directory,
             batch_size=batch_size,
-            labels=[1.0] * 13849,
+            labels="inferred",
+            label_mode="categorical",
             image_size=image_size,
             crop_to_aspect_ratio=True,
             interpolation="bilinear",
@@ -39,8 +40,8 @@ def load_data(directory='images/final/', batch_size=64, image_size=(128, 128), G
 
         return train_ds, class_names
 
-def plot_image(image, label, labels={}):
-    fig = px.imshow(image, width=128, height=128)
+def plot_image(image, label, labels={}, size=128):
+    fig = px.imshow(image, width=size, height=size)
     fig.update_layout(
         title=f"Label: {label}",
         width=500,
@@ -67,8 +68,8 @@ def plot_image(image, label, labels={}):
                 yref="y",
                 x0=0,
                 y0=0,
-                x1=128,
-                y1=128,
+                x1=size,
+                y1=size,
                 line=dict(
                     color="black",
                     width=2,
@@ -118,7 +119,7 @@ def plot_image(image, label, labels={}):
 
     fig.show()
 
-def plot_n_images(ds, n, class_names, GAN=False):
+def plot_n_images(ds, n, class_names, GAN=False, size=128):
     for image, label in ds.take(1):
         if GAN:
             image = image * 127.5 + 127.5
@@ -126,7 +127,7 @@ def plot_n_images(ds, n, class_names, GAN=False):
         for i in range(n):
             # print(image[i][0][0])
             print(image[i].shape)
-            plot_image(image[i], class_names[int(tf.argmax(tf.reshape(label[i], [-1, 1]), axis=0))])
+            plot_image(image[i], class_names[int(tf.argmax(tf.reshape(label[i], [-1, 1]), axis=0))], size=size)
 
 def plot_family(pokemon):
     df = pd.read_csv("PokeDataset.csv")
