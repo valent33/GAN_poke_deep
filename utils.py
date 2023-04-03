@@ -125,7 +125,7 @@ def plot_n_images(ds, n, class_names, GAN=False, size=128):
             image = image * 127.5 + 127.5
             image = image.numpy().astype("uint8")
         for i in range(n):
-            # print(image[i][0][0])
+            print(label[i])
             print(image[i].shape)
             plot_image(image[i], class_names[int(tf.argmax(tf.reshape(label[i], [-1, 1]), axis=0))], size=size)
 
