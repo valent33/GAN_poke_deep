@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GAN Image Generator</title>
+  </head>
+  <body>
+    <h1>GAN Image Generator</h1>
+    <form method="post">
+      {{ form.csrf_token }}
+      {{ form.submit() }}
+    </form>
+    <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Generated Image">
+  </body>
+</html>
