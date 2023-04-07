@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>GAN Image Generator</title>
-  </head>
-  <body>
-    <h1>GAN Image Generator</h1>
-    <form method="post">
-      {{ form.csrf_token }}
-      {{ form.submit() }}
+<head>
+    <title>GAN Predictor</title>
+</head>
+<body>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <input type="checkbox" name="input[]" value="1">Input 1<br>
+        <input type="checkbox" name="input[]" value="2">Input 2<br>
+        <input type="checkbox" name="input[]" value="3">Input 3<br>
+        <input type="checkbox" name="input[]" value="4">Input 4<br>
+        <input type="checkbox" name="input[]" value="5">Input 5<br>
+        <input type="checkbox" name="input[]" value="6">Input 6<br>
+        <input type="checkbox" name="input[]" value="7">Input 7<br>
+        <input type="checkbox" name="input[]" value="8">Input 8<br>
+        <input type="checkbox" name="input[]" value="9">Input 9<br>
+        <input type="checkbox" name="input[]" value="10">Input 10<br>
+        <input type="checkbox" name="input[]" value="11">Input 11<br>
+        <input type="checkbox" name="input[]" value="12">Input 12<br>
+        <input type="checkbox" name="input[]" value="13">Input 13<br>
+        <input type="checkbox" name="input[]" value="14">Input 14<br>
+        <input type="checkbox" name="input[]" value="15">Input 15<br>
+        <input type="checkbox" name="input[]" value="16">Input 16<br>
+        <input type="checkbox" name="input[]" value="17">Input 17<br>
+        <input type="checkbox" name="input[]" value="18">Input 18<br>
+        <input type="submit" value="Predict">
     </form>
+    {% if filename %}
     <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Generated Image">
-  </body>
+    {% endif %}
+</body>
 </html>

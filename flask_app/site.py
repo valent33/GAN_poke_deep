@@ -17,6 +17,11 @@ def index():
     form = PredictionForm()
     filename = 'default.png'
     if form.validate_on_submit():
+        # Get the checkbox values
+        inputs = request.form.getlist('input[]')
+        # Convert the values to floats
+        inputs = [float(i) for i in inputs]
+        print(inputs)
         # generate the image using the GAN model
         image = generator.predict(tf.random.normal(shape=(1, 100)))
         # save the image to a temporary file
