@@ -5,12 +5,14 @@ from wtforms import SubmitField
 from flask import render_template, request
 import os
 import numpy as np
+from flask_bootstrap import Bootstrap
 
 class PredictionForm(FlaskForm):
     submit = SubmitField('Predict')
 
 generator = tf.keras.models.load_model('cgenerator_model_final.h5')
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'secret'
 
 @app.route('/', methods=['GET', 'POST'])
