@@ -243,7 +243,8 @@ def plot_family(pokemon):
 
 flip_and_rotate = tf.keras.Sequential([
     tf.keras.layers.experimental.preprocessing.RandomFlip("horizontal"),
-    tf.keras.layers.experimental.preprocessing.RandomRotation(0.1, fill_mode="constant", fill_value=1), # 255 for classification, 1 for GAN
+    tf.keras.layers.experimental.preprocessing.RandomRotation(0.05, fill_mode="constant", fill_value=1), # 255 for classification, 1 for GAN
+    tf.keras.layers.experimental.preprocessing.RandomTranslation(0.05, 0.05, fill_mode="constant", fill_value=1), # expeminental
 ])
 
 def preprocess_image(image, GAN=False):
