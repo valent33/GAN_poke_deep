@@ -30,15 +30,15 @@ def index():
         image = generator.predict([tf.random.normal(shape=(1, 100)), label])
         # save the image to a temporary file
         filename = 'temp.png'
-        temp_file = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace('\\', '/')
+        temp_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         # save the image
         tf.keras.preprocessing.image.save_img(temp_file, image[0])
     return render_template('index.html', form=form, filename=filename)
 
-@app.route('/uploads/<filename>')
+@app.route('/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    app.config['UPLOAD_FOLDER'] = 'uploads'
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
     app.run(debug=True)
