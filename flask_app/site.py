@@ -11,7 +11,7 @@ class PredictionForm(FlaskForm):
     submit = SubmitField('Predict')
 
 generator = tf.keras.models.load_model('cgenerator_model_final.h5')
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'secret'
 

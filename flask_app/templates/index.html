@@ -2,8 +2,74 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Pokemon Hollow.ttf') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='Pokemon Solid.ttf') }}" type="text/css" />
     <title>GAN Predictor</title>
+
     <style>
+        /* Définition de la font-family pour un niveau de texte spécifique */
+        .custom-font {
+            font-family: 'Pokemon Solid', sans-serif;
+            /* Remplacez sans-serif par une police de secours au cas où la police personnalisée ne se charge pas */
+            color: #ffde00;
+            font-size: xxx-large;
+
+        }
+        .custom-font2 {
+            font-family: 'Pokemon Solid', sans-serif;
+            /* Remplacez sans-serif par une police de secours au cas où la police personnalisée ne se charge pas */
+            color: #3466AF;
+            font-size: xxx-large;
+        }
+        h1 {
+            display: inline;
+        }
+
+        /* Style for the btn */
+        .btn {
+            border: none;
+            background-color: #3466AFFF;
+            cursor: pointer;
+            /* Style for font */
+            font-family: "Pokemon Solid", sans-serif;
+            font-size: 18px;
+            color: #ffde00;
+        }
+
+        /* Style for the btn when hover */
+        .btn:hover {
+            background-color: #ffde00;
+            color: #3466AFFF;
+        }
+
+        /* Style for the img */
+        /* Must be with shadow behind border */
+        .img {
+            border: 5px solid #3466AFFF;
+            box-shadow: 0 0 10px #3466AFFF;
+            /*radius of the shadow*/
+            border-radius: 10px;
+        }
+
+        /* Style for the checkbox */
+        input[type="checkbox"] {
+            display: none; /* Hide the default checkbox */
+        }
+        /* Style for the checkbox image button */
+        .checkbox-img {
+            cursor: pointer;
+            /*filter: grayscale(100%);*/ /* Add grayscale to the image */
+
+            opacity: 0.4; /* Add opacity to indicate unselected state */
+        }
+
+        /* Style for the checkbox image button when checked */
+        input[type="checkbox"]:checked + label .checkbox-img {
+            filter: grayscale(0%); /* Remove grayscale to the image */
+            opacity: 1; /* Set opacity to 1 to indicate selected state */
+        }
+
+
         .btn-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -24,9 +90,66 @@
             margin: 0;
             padding: 0;
         }
+        /* Style for the button container */
+        .predict_button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-family: "Pokemon Hollow", sans-serif;
+            font-size: 18px;
+            color: #000;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        /* create a style for containing the button at the middle of the page */
+        .predict_button_container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Style for the hover animation */
+        .predict_button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: #39f;
+            opacity: 0.5;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hover effect on the button */
+        .predict_button:hover {
+            color: #fff;
+        }
+
+        /* Hover effect on the animation */
+        .predict_button:hover::before {
+            left: 0;
+        }
+
+        .title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Style for image container */
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
     <script>
         function submitForm() {
             var form = document.getElementById("gan-form");
@@ -36,114 +159,159 @@
 </head>
 
 <body>
+    <!-- Creare a spacer for the top of the page it will be 5% of the screen -->
+    <div style="height: 5vh"></div>
+    <!-- use bootstrap to center the title at the top of the page and vertically center it -->
+    <div class="container">
+            <div class="col-12">
+                <div class="title">
+                    <h1 class="custom-font">Poke </h1><h1 class="custom-font2">Generator</h1>
+                </div>
+            </div>
+        </div>
+
+    <!-- Creare a spacer between the title and the form it will be 10% of the screen -->
+    <div style="height: 10vh"></div>
+
     <!-- use bootstrap to make a grid of 3 by 6 buttons and a submit button below -->
+    <!-- the buttons are pngs buttons from types folder -->
     <form method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-        <div class="container">
-            <div class="row">
+            <div class="container">
+                <div class="row">
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox1" name="input[]" value="1" autocomplete="off">
+                        <label for="checkbox1">
+                            <img src="{{ url_for('static', filename='Bug.png') }}" alt="Bug Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                            <input type="checkbox" id="checkbox2" name="input[]" value="2" autocomplete="off">
+                            <label for="checkbox2">
+                                <img src="{{ url_for('static', filename='Dark.png') }}" alt="Dark Class" class="checkbox-img">
+                            </label>
+                        </label>
+                    </div>
+                    <div class="col-2">
+                            <input type="checkbox" id="checkbox3" name="input[]" value="3" autocomplete="off">
+                            <label for="checkbox3">
+                                <img src="{{ url_for('static', filename='Dragon.png') }}" alt="Dragon Class" class="checkbox-img">
+                            </label>
+                        </label>
+                    </div>
 
+                    <div class="col-2">
+                            <input type="checkbox" id="checkbox4" name="input[]" value="4" autocomplete="off">
+                            <label for="checkbox4">
+                                <img src="{{ url_for('static', filename='Electric.png') }}" alt="Electric Class" class="checkbox-img">
+                            </label>
+                        </label>
+                    </div>
+                    <div class="col-2">
+                            <input type="checkbox" id="checkbox5" name="input[]" value="5" autocomplete="off">
+                            <label for="checkbox5">
+                                <img src="{{ url_for('static', filename='Fairy.png') }}" alt="Fairy Class" class="checkbox-img">
+                            </label>
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox6" name="input[]" value="6" autocomplete="off">
+                            <label for="checkbox6">
+                                <img src="{{ url_for('static', filename='Fighting.png') }}" alt="Fighting Class" class="checkbox-img">
+                        </label>
+                    </div>
+                </div>
 
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="1" autocomplete="off"> 1
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="2" autocomplete="off"> 2
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="3" autocomplete="off"> 3
-                    </label>
+                <div class="row">
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox7" name="input[]" value="7" autocomplete="off">
+                        <label for="checkbox7">
+                            <img src="{{ url_for('static', filename='Fire.png') }}" alt="Fire Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox8" name="input[]" value="8" autocomplete="off">
+                        <label for="checkbox8">
+                            <img src="{{ url_for('static', filename='Flying.png') }}" alt="Flying Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox9" name="input[]" value="9" autocomplete="off">
+                        <label for="checkbox9">
+                            <img src="{{ url_for('static', filename='Ghost.png') }}" alt="Ghost Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox10" name="input[]" value="10" autocomplete="off">
+                        <label for="checkbox10">
+                            <img src="{{ url_for('static', filename='Grass.png') }}" alt="Grass Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox11" name="input[]" value="11" autocomplete="off">
+                        <label for="checkbox11">
+                            <img src="{{ url_for('static', filename='Ground.png') }}" alt="Ground Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox12" name="input[]" value="12" autocomplete="off">
+                        <label for="checkbox12">
+                            <img src="{{ url_for('static', filename='Ice.png') }}" alt="Ice Class" class="checkbox-img">
+                        </label>
+                    </div>
                 </div>
 
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="4" autocomplete="off"> 4
-                    </label>
+                <div class="row">
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox13" name="input[]" value="13" autocomplete="off">
+                        <label for="checkbox13">
+                            <img src="{{ url_for('static', filename='Normal.png') }}" alt="Normal Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox14" name="input[]" value="14" autocomplete="off">
+                        <label for="checkbox14">
+                            <img src="{{ url_for('static', filename='Poison.png') }}" alt="Poison Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox15" name="input[]" value="15" autocomplete="off">
+                        <label for="checkbox15">
+                            <img src="{{ url_for('static', filename='Psychic.png') }}" alt="Psychic Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox16" name="input[]" value="16" autocomplete="off">
+                        <label for="checkbox16">
+                            <img src="{{ url_for('static', filename='Rock.png')}}" alt="Rock Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox17" name="input[]" value="17" autocomplete="off">
+                        <label for="checkbox17">
+                            <img src="{{ url_for('static', filename='Steel.png') }}" alt="Steel Class" class="checkbox-img">
+                        </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkbox18" name="input[]" value="18" autocomplete="off">
+                        <label for="checkbox18">
+                            <img src="{{ url_for('static', filename='Water.png') }}" alt="Water Class" class="checkbox-img">
+                        </label>
+                    </div>
                 </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="5" autocomplete="off"> 5
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="6" autocomplete="off"> 6
-                    </label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="7" autocomplete="off"> 7
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="8" autocomplete="off"> 8
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="9" autocomplete="off"> 9
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="10" autocomplete="off"> 10
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="11" autocomplete="off"> 11
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="12" autocomplete="off"> 12
-                    </label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="13" autocomplete="off"> 13
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="14" autocomplete="off"> 14
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="15" autocomplete="off"> 15
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="16" autocomplete="off"> 16
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="17" autocomplete="off"> 17
-                    </label>
-                </div>
-                <div class="col-2">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" name="input[]" value="18" autocomplete="off"> 18
-                    </label>
-                </div>
-            </div>
-            <input type="submit" value="Predict">
+                <div style="height: 10vh"></div>
+
+                <input type="submit" value="Create your Pokemon" class="btn predict_button_container btn-block btn-lg" color="ffcb05">   <!--btn-block btn-lg-->
+
+            <div style="height: 10vh"></div>
+
+            <!-- image container -->
+            <div class="image-container">
+                {% if filename %}
+                <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Generated Image" class="img img-rounded" width="150" height="150">
+                {% endif %}
+        </div>
     </form>
-    {% if filename %}
-    <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Generated Image">
-    {% endif %}
 </body>
 
 </html>
