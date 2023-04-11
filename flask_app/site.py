@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, jsonify
 import tensorflow as tf
 from flask_wtf import FlaskForm
 from wtforms import SubmitField
@@ -18,7 +18,7 @@ app.config['SECRET_KEY'] = 'secret'
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = PredictionForm()
-    filename = 'default.png'
+    filename = 'temp.png'
     if form.validate_on_submit():
         # Get the checkbox values
         inputs = request.form.getlist('input[]')
@@ -36,6 +36,11 @@ def index():
         # save the image
         tf.keras.preprocessing.image.save_img(temp_file, image[0])
     return render_template('index.html', form=form, filename=filename)
+
+@app.route('/get_image')
+def get_image():
+    filename = 'temp.png'  # Example filename
+    return jsonify(filename=filename)
 
 @app.route('/<filename>')
 def uploaded_file(filename):

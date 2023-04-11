@@ -4,6 +4,7 @@
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='Pokemon Hollow.ttf') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='Pokemon Solid.ttf') }}" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery for AJAX -->
     <title>GAN Predictor</title>
 
     <style>
@@ -303,14 +304,21 @@
 
                 <input type="submit" value="Create your Pokemon" class="btn predict_button_container btn-block btn-lg" color="ffcb05">   <!--btn-block btn-lg-->
 
-            <div style="height: 10vh"></div>
-
-            <!-- image container -->
-            <div class="image-container">
-                {% if filename %}
-                <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Generated Image" class="img img-rounded" width="150" height="150">
-                {% endif %}
-        </div>
+                <div style="height: 10vh"></div>
+                <!-- image container -->
+                <div id="image-container" class="image-container"></div> <!-- Placeholder for image -->
+                <script>
+                    // Use JavaScript and AJAX to fetch data from Flask and update the page
+                    $(document).ready(function() {
+                        $.get('/get_image', function(data) {
+                            if (data.filename) {
+                                var imageUrl = data.filename;
+                                $('#image-container').html('<img src="' + imageUrl + '" alt="Generated Image" class="img img-rounded" width="150" height="150">');
+                            }
+                        });
+                    });
+                </script>
+            </div>
     </form>
 </body>
 
