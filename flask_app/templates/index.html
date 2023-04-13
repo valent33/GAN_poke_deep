@@ -12,7 +12,7 @@
         .custom-font {
             font-family: 'Pokemon Solid', sans-serif;
             /* Remplacez sans-serif par une police de secours au cas où la police personnalisée ne se charge pas */
-            color: #ffde00;
+            color: #ffc500;
             font-size: xxx-large;
 
         }
@@ -22,9 +22,19 @@
             color: #3466AF;
             font-size: xxx-large;
         }
+
         h1 {
             display: inline;
         }
+
+        p {
+            /* Style for font */
+            font-family: "Pokemon Solid", sans-serif;
+            font-size: 18px;
+            color: #3466AF;
+        }
+
+
 
         /* Style for the btn */
         .btn {
@@ -34,12 +44,12 @@
             /* Style for font */
             font-family: "Pokemon Solid", sans-serif;
             font-size: 18px;
-            color: #ffde00;
+            color: #ffc500;
         }
 
         /* Style for the btn when hover */
         .btn:hover {
-            background-color: #ffde00;
+            background-color: #ffc500;
             color: #3466AFFF;
         }
 
@@ -147,16 +157,118 @@
             justify-content: center;
             align-items: center;
         }
+        body {
+            background-image: url('../static/Background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-color: #E3E3E3;
+        }
+
+        li{
+            list-style-type: circle; /* style de la puce */
+            list-style-position : inside; /* position de la puce */
+            list-style-image: url("../static/pokeball.png");  /* image de la puce */
+        }
+
+        .d-flex{
+          gap:40px;
+        }
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <script>
-        function submitForm() {
-            var form = document.getElementById("gan-form");
-            form.submit();
+        function handleSubmit(event) {
+            event.preventDefault(); // prevent form submission
+
+            // Get form data
+            var form = event.target;
+            var formData = new FormData(form);
+
+            // Send form data to Flask endpoint
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                    // Handle response from Flask endpoint
+                    if (data.success) {
+                        alert("Form submitted successfully !"); // Show success message
+
+                        // Update image URL to refresh image
+                        var imageContainerElement = document.getElementById('image-container'); // Replace with your image element ID
+                        imageContainerElement.textContent = 'Image URL: ' + data.image_url; // Update URL content; // Update URL content
+                        imageContainerElement.src = data.image_url; // Update URL content
+                        // insert the img in the image container
+                        imageContainerElement.innerHTML = '<img src="' + data.image_url + '?timestamp=' + new Date().getTime() +
+                            '" class="img" alt="Pokemon Image" width="150" height="150">';
+                        var typesContainerElement = document.getElementById('types-container'); // Replace with your types
+                        // the container must be 150px by 150px and center all the content
+                        typesContainerElement.style = "width: 150px; height: 150px; display: flex; justify-content: center; flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF";
+                        // store the types in a list
+                        var types = data.types;
+                        // Reset the types container
+                        typesContainerElement.innerHTML = '';
+                        // loop through the list, create an html list and add the types to the list
+                        for (var i = 0; i < types.length; i++) {
+                            typesContainerElement.innerHTML += '<li>' + types[i] + '</li>';
+                        }
+                        // let the user insert the name of the pokemon in the input and register it with a button
+                        var nameContainerElement = document.getElementById('registerer-container'); // Replace with your name
+                        // the container must be 150px by 150px and make the content space between with padding 15px
+                        nameContainerElement.style = "width: 150px; height: 150px; display: flex; justify-content: space-between; " + "flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF; padding: 15px";
+                        // Reset the name container
+                        nameContainerElement.innerHTML = '';
+                        // create a form to insert the name of the pokemon, on submit call the download function
+                        nameContainerElement.innerHTML += '<form onsubmit="download(event)"><input type="text" name="name" placeholder="Name" ' + 'class="form-control form-control-sm"><br><input type="submit" value="Register" class="btn btn-block btn-lg" color="ffcb05"></form>';
+
+                    } else {
+                        alert("Form submission failed."); // Show error message
+                    }
+            })
+            .catch(error => {
+                console.error(error); // Log error to console
+            });
         }
-    </script>
+        // function to download the image
+        function download(event) {
+
+            alert("Download");
+            // prevent the form from submitting
+            event.preventDefault();
+            // get the name of the pokemon
+            var name = document.getElementsByName("name")[0].value;
+            // get the image url
+            var image_url = document.getElementById('image-container').src;
+            // download the image with the name of the pokemon
+            // Send request to Flask endpoint to download image
+            fetch('/download', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                      name: name,
+                      image_url: image_url
+                })
+            })
+            .then(response => response.blob()) // convert response to blob
+            .then(blob => {
+                // Create a temporary download link
+                var downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(blob); // create a download URL from the blob
+                downloadLink.download = name + '.jpg'; // set the file name for download
+                downloadLink.click(); // click the download link to trigger the download
+                URL.revokeObjectURL(downloadLink.href); // revoke the download URL after download
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Image download failed."); // Show error message
+            });
+        }
+</script>
 </head>
 
 <body>
@@ -176,50 +288,46 @@
 
     <!-- use bootstrap to make a grid of 3 by 6 buttons and a submit button below -->
     <!-- the buttons are pngs buttons from types folder -->
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" onsubmit="handleSubmit(event)">
         {{ form.hidden_tag() }}
             <div class="container">
                 <div class="row">
                     <div class="col-2">
                         <input type="checkbox" id="checkbox1" name="input[]" value="1" autocomplete="off">
                         <label for="checkbox1">
-                            <img src="{{ url_for('static', filename='Bug.png') }}" alt="Bug Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Grass.png') }}" alt="Grass Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                             <input type="checkbox" id="checkbox2" name="input[]" value="2" autocomplete="off">
                             <label for="checkbox2">
-                                <img src="{{ url_for('static', filename='Dark.png') }}" alt="Dark Class" class="checkbox-img">
+                                <img src="{{ url_for('static', filename='Psychic.png') }}" alt="Psychic Class" class="checkbox-img">
                             </label>
-                        </label>
                     </div>
                     <div class="col-2">
                             <input type="checkbox" id="checkbox3" name="input[]" value="3" autocomplete="off">
                             <label for="checkbox3">
-                                <img src="{{ url_for('static', filename='Dragon.png') }}" alt="Dragon Class" class="checkbox-img">
+                                <img src="{{ url_for('static', filename='Dark.png') }}" alt="Dark Class" class="checkbox-img">
                             </label>
-                        </label>
                     </div>
 
                     <div class="col-2">
                             <input type="checkbox" id="checkbox4" name="input[]" value="4" autocomplete="off">
                             <label for="checkbox4">
-                                <img src="{{ url_for('static', filename='Electric.png') }}" alt="Electric Class" class="checkbox-img">
+                                <img src="{{ url_for('static', filename='Bug.png') }}" alt="Bug Class" class="checkbox-img">
                             </label>
-                        </label>
                     </div>
                     <div class="col-2">
                             <input type="checkbox" id="checkbox5" name="input[]" value="5" autocomplete="off">
                             <label for="checkbox5">
-                                <img src="{{ url_for('static', filename='Fairy.png') }}" alt="Fairy Class" class="checkbox-img">
+                                <img src="{{ url_for('static', filename='Steel.png') }}" alt="Steel Class" class="checkbox-img">
                             </label>
-                        </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox6" name="input[]" value="6" autocomplete="off">
                             <label for="checkbox6">
-                                <img src="{{ url_for('static', filename='Fighting.png') }}" alt="Fighting Class" class="checkbox-img">
-                        </label>
+                                <img src="{{ url_for('static', filename='Rock.png') }}" alt="Rock Class" class="checkbox-img">
+                            </label>
                     </div>
                 </div>
 
@@ -227,37 +335,37 @@
                     <div class="col-2">
                         <input type="checkbox" id="checkbox7" name="input[]" value="7" autocomplete="off">
                         <label for="checkbox7">
-                            <img src="{{ url_for('static', filename='Fire.png') }}" alt="Fire Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Normal.png') }}" alt="Normal Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox8" name="input[]" value="8" autocomplete="off">
                         <label for="checkbox8">
-                            <img src="{{ url_for('static', filename='Flying.png') }}" alt="Flying Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Fairy.png') }}" alt="Fairy Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox9" name="input[]" value="9" autocomplete="off">
                         <label for="checkbox9">
-                            <img src="{{ url_for('static', filename='Ghost.png') }}" alt="Ghost Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Water.png') }}" alt="Water Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox10" name="input[]" value="10" autocomplete="off">
                         <label for="checkbox10">
-                            <img src="{{ url_for('static', filename='Grass.png') }}" alt="Grass Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Dragon.png') }}" alt="Dragon Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox11" name="input[]" value="11" autocomplete="off">
                         <label for="checkbox11">
-                            <img src="{{ url_for('static', filename='Ground.png') }}" alt="Ground Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Electric.png') }}" alt="Electric Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox12" name="input[]" value="12" autocomplete="off">
                         <label for="checkbox12">
-                            <img src="{{ url_for('static', filename='Ice.png') }}" alt="Ice Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Poison.png') }}" alt="Poison Class" class="checkbox-img">
                         </label>
                     </div>
                 </div>
@@ -266,60 +374,57 @@
                     <div class="col-2">
                         <input type="checkbox" id="checkbox13" name="input[]" value="13" autocomplete="off">
                         <label for="checkbox13">
-                            <img src="{{ url_for('static', filename='Normal.png') }}" alt="Normal Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Fire.png') }}" alt="Fire Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox14" name="input[]" value="14" autocomplete="off">
                         <label for="checkbox14">
-                            <img src="{{ url_for('static', filename='Poison.png') }}" alt="Poison Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Ice.png') }}" alt="Ice Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox15" name="input[]" value="15" autocomplete="off">
                         <label for="checkbox15">
-                            <img src="{{ url_for('static', filename='Psychic.png') }}" alt="Psychic Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Ground.png') }}" alt="Ground Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox16" name="input[]" value="16" autocomplete="off">
                         <label for="checkbox16">
-                            <img src="{{ url_for('static', filename='Rock.png')}}" alt="Rock Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Ghost.png')}}" alt="Ghost Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox17" name="input[]" value="17" autocomplete="off">
                         <label for="checkbox17">
-                            <img src="{{ url_for('static', filename='Steel.png') }}" alt="Steel Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Fighting.png') }}" alt="Fighting Class" class="checkbox-img">
                         </label>
                     </div>
                     <div class="col-2">
                         <input type="checkbox" id="checkbox18" name="input[]" value="18" autocomplete="off">
                         <label for="checkbox18">
-                            <img src="{{ url_for('static', filename='Water.png') }}" alt="Water Class" class="checkbox-img">
+                            <img src="{{ url_for('static', filename='Flying.png') }}" alt="Flying Class" class="checkbox-img">
                         </label>
                     </div>
                 </div>
                 <div style="height: 10vh"></div>
 
                 <input type="submit" value="Create your Pokemon" class="btn predict_button_container btn-block btn-lg" color="ffcb05">   <!--btn-block btn-lg-->
-
                 <div style="height: 10vh"></div>
-                <!-- image container -->
-                <div id="image-container" class="image-container"></div> <!-- Placeholder for image -->
-                <script>
-                    // Use JavaScript and AJAX to fetch data from Flask and update the page
-                    $(document).ready(function() {
-                        $.get('/get_image', function(data) {
-                            if (data.filename) {
-                                var imageUrl = data.filename;
-                                $('#image-container').html('<img src="' + imageUrl + '" alt="Generated Image" class="img img-rounded" width="150" height="150">');
-                            }
-                        });
-                    });
-                </script>
+                <!-- put types container and image container in a flexbox and put them at the center of the page -->
+
+
             </div>
     </form>
+    <div class="d-flex justify-content-center">
+        <!-- types container -->
+        <div id="types-container" class="types-container" ></div>
+        <!-- image container -->
+        <div id="image-container" class="image-container" ></div> <!-- Placeholder for image -->
+        <!-- registerer container -->
+        <div id="registerer-container" class="registerer-container" ></div>
+    </div>
 </body>
 
 </html>
