@@ -132,7 +132,7 @@ def submit_form():
         # save the image
         tf.keras.preprocessing.image.save_img(temp_file, image[0])
         # Return new image URL as JSON response
-        return jsonify({'success': True, 'image_url': filename, 'types': types})
+        return jsonify({'success': True, 'image_url': filename, 'types': types, 'graphJSON': plot_stats([100, 100, 100, 100, 100, 100])})
 
 
 # Create a function to get jsonify the image filename
