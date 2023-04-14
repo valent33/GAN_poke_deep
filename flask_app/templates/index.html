@@ -418,6 +418,8 @@
             </div>
     </form>
     <div class="d-flex justify-content-center">
+        <!-- stats container -->
+        <div id='chart' class='chart'></div>
         <!-- types container -->
         <div id="types-container" class="types-container" ></div>
         <!-- image container -->
@@ -426,5 +428,9 @@
         <div id="registerer-container" class="registerer-container" ></div>
     </div>
 </body>
-
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var graphs = "{{ graphJSON | safe }}";
+  Plotly.plot('chart',graphs,{});
+</script>
 </html>
