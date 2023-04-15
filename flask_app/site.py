@@ -7,6 +7,9 @@ import os
 import numpy as np
 from flask_bootstrap import Bootstrap
 import requests
+import plotly.graph_objects as go
+from plotly.utils import PlotlyJSONEncoder
+import json
 
 class PredictionForm(FlaskForm):
     submit = SubmitField('Create your Pokemon')
@@ -24,7 +27,8 @@ app.config['SECRET_KEY'] = 'secret'
 def index():
     form = PredictionForm()
     filename = 'temp.png'  # Example filename
-    return render_template('index.html', form=form, filename=filename)
+    graphJSON = plot_stats([100, 100, 100, 100, 100, 100])
+    return render_template('index.html', form=form, filename=filename, graphJSON=graphJSON)
 
 # Create a function to download the image with the name of the pokemon fetched from the form
 #('/download', {
@@ -128,7 +132,7 @@ def submit_form():
         # save the image
         tf.keras.preprocessing.image.save_img(temp_file, image[0])
         # Return new image URL as JSON response
-        return jsonify({'success': True, 'image_url': filename, 'types': types})
+        return jsonify({'success': True, 'image_url': filename, 'types': types, 'graphJSON': plot_stats([100, 100, 100, 100, 100, 100])})
 
 
 # Create a function to get jsonify the image filename
@@ -140,6 +144,82 @@ def get_image():
 @app.route('/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+def plot_stats(stats):
+    # df = pd.DataFrame({'HP': 40, 'Attack': 60, 'Defense': 30, 'Sp. Atk': 31, 'Sp. Def': 31, 'Speed': 70, 'HP': 40}, index=[0])
+    # df = df[['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed', 'HP']]
+    stats = stats + [stats[0]]
+    fig = go.Figure(go.Scatterpolar(
+                            # r=df.iloc[0],
+                            r=stats,
+                            theta=['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed', 'HP'],
+                            line={'color':'blue'},
+                            fillcolor='yellow',
+                            fill='toself',
+                            name="stats",
+                            marker=dict(
+                                color='blue',
+                                size=5,
+                        ),
+                            hovertemplate="%{r:.1f}<extra></extra>",
+                            
+                        ))
+
+        # GLOBAL AVERAGE
+        # fig.add_trace(go.Scatterpolar(
+        #                     r=total['mean'],
+        #                     theta=statistics.index, 
+        #                     line={'dash':'dash','color':'black'},
+        #                     # marker={'size':0.1},
+        #                     # hovertemplate="%{r:.1f}<extra></extra>"
+        #                 ), row=Nrow, col=Ncol)
+
+    # add the text annotations
+    # for i, value in enumerate(df.iloc[0]):
+    for i, value in enumerate(stats):
+        if i == 0:
+            x = 0.5
+            y = 0.95
+        if i == 1:
+            x = 0.9
+            y = 0.75
+        if i == 2:
+            x = 0.9
+            y = 0.25
+        elif i == 3:
+            x = 0.5
+            y = 0.05
+        elif i == 4:
+            x = 0.1
+            y = 0.25
+        elif i == 5:
+            x = 0.1
+            y = 0.75
+        elif i == 6:
+            break
+
+        fig.add_annotation(
+            x=x,
+            y=y,
+            text=str(value),
+            showarrow=False,
+            font=dict(
+                color="black",
+                size=12,
+            ),
+        )
+
+    fig.update_polars(gridshape='linear', 
+                    angularaxis=dict(
+                        thetaunit="degrees",
+                        rotation=90,
+                        direction='clockwise'),
+                    radialaxis=dict(visible=False,range=[0, 150]))
+    fig.update_layout(
+        width=300, height=300, margin=dict(l=45, r=45, b=45, t=45, pad=0)
+    )
+    # fig.show()
+    return json.dumps(fig, cls=PlotlyJSONEncoder)
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')

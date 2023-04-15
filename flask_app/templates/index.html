@@ -177,6 +177,7 @@
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
     <script>
         function handleSubmit(event) {
@@ -418,6 +419,12 @@
             </div>
     </form>
     <div class="d-flex justify-content-center">
+        <!-- stats container -->
+        <div id='chart' class='chart'></div>
+        <script>
+            var data = {{ graphJSON|safe }};
+            Plotly.newPlot('chart', data);
+        </script>
         <!-- types container -->
         <div id="types-container" class="types-container" ></div>
         <!-- image container -->
