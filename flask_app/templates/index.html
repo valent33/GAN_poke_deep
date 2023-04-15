@@ -203,10 +203,10 @@
                         imageContainerElement.src = data.image_url; // Update URL content
                         // insert the img in the image container
                         imageContainerElement.innerHTML = '<img src="' + data.image_url + '?timestamp=' + new Date().getTime() +
-                            '" class="img" alt="Pokemon Image" width="150" height="150">';
+                            '" class="img" alt="Pokemon Image" width="200" height="200">';
                         var typesContainerElement = document.getElementById('types-container'); // Replace with your types
                         // the container must be 150px by 150px and center all the content
-                        typesContainerElement.style = "width: 150px; height: 150px; display: flex; justify-content: center; flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF";
+                        typesContainerElement.style = "width: 200px; height: 200px; display: flex; justify-content: center; flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF";
                         // store the types in a list
                         var types = data.types;
                         // Reset the types container
@@ -218,7 +218,7 @@
                         // let the user insert the name of the pokemon in the input and register it with a button
                         var nameContainerElement = document.getElementById('registerer-container'); // Replace with your name
                         // the container must be 150px by 150px and make the content space between with padding 15px
-                        nameContainerElement.style = "width: 150px; height: 150px; display: flex; justify-content: space-between; " + "flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF; padding: 15px";
+                        nameContainerElement.style = "width: 200px; height: 200px; display: flex; justify-content: space-between; " + "flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF; padding: 15px";
                         // Reset the name container
                         nameContainerElement.innerHTML = '';
                         // create a form to insert the name of the pokemon, on submit call the download function
