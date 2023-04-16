@@ -11,6 +11,13 @@ import plotly.graph_objects as go
 from plotly.utils import PlotlyJSONEncoder
 import json
 
+# define custom font CHERL___.TTF for the graph
+my_font = dict(
+    family="CHEL___.TTF",
+    size=18,
+    color="#7f7f7f"
+)
+
 class PredictionForm(FlaskForm):
     submit = SubmitField('Create your Pokemon')
 
@@ -146,24 +153,23 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 def plot_stats(stats):
-    # df = pd.DataFrame({'HP': 40, 'Attack': 60, 'Defense': 30, 'Sp. Atk': 31, 'Sp. Def': 31, 'Speed': 70, 'HP': 40}, index=[0])
-    # df = df[['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed', 'HP']]
     stats = stats + [stats[0]]
     fig = go.Figure(go.Scatterpolar(
-                            # r=df.iloc[0],
                             r=stats,
                             theta=['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed', 'HP'],
-                            line={'color':'blue'},
-                            fillcolor='yellow',
+                            line={'width':0},
+                            fillcolor='rgba(255, 197, 0, 0.7)',
                             fill='toself',
                             name="stats",
-                            marker=dict(
-                                color='blue',
-                                size=5,
-                        ),
                             hovertemplate="%{r:.1f}<extra></extra>",
-                            
-                        ))
+                            # none marker to hide the points
+                            marker=dict(
+                                symbol='circle',
+                                size=0.1,
+                                color='rgba(255, 197, 0, 0)',
+                            )
+
+    ))
 
         # GLOBAL AVERAGE
         # fig.add_trace(go.Scatterpolar(
@@ -177,23 +183,29 @@ def plot_stats(stats):
     # add the text annotations
     # for i, value in enumerate(df.iloc[0]):
     for i, value in enumerate(stats):
+        # hp
         if i == 0:
             x = 0.5
-            y = 0.95
+            y = 1.025
+        # attack
         if i == 1:
-            x = 0.9
+            x = 1.125
             y = 0.75
+        # defense
         if i == 2:
-            x = 0.9
-            y = 0.25
+            x = 1.125
+            y = 0.07
+        # sp. atk
         elif i == 3:
             x = 0.5
-            y = 0.05
+            y = -0.225
+        # sp. def
         elif i == 4:
-            x = 0.1
-            y = 0.25
+            x = -0.12
+            y = 0.07
+        # speed
         elif i == 5:
-            x = 0.1
+            x = -0.12
             y = 0.75
         elif i == 6:
             break
@@ -204,8 +216,10 @@ def plot_stats(stats):
             text=str(value),
             showarrow=False,
             font=dict(
-                color="black",
-                size=12,
+                family="Cheri Liney",
+                color="#3466AF",
+                size=15,
+
             ),
         )
 
@@ -214,9 +228,16 @@ def plot_stats(stats):
                         thetaunit="degrees",
                         rotation=90,
                         direction='clockwise'),
-                    radialaxis=dict(visible=False,range=[0, 150]))
+                    radialaxis=dict(visible=False,range=[0, 175]))
     fig.update_layout(
-        width=300, height=300, margin=dict(l=45, r=45, b=45, t=45, pad=0)
+        width=290, height=280, margin=dict(l=45, r=45, b=45, t=45, pad=0),
+        plot_bgcolor = 'rgba(0,0,0,0)',
+        paper_bgcolor = 'rgba(0,0,0,0)',
+        font=dict(
+            family="Cheri Liney",
+            color="#3466AF",
+            size=14.5,
+        ),
     )
     # fig.show()
     return json.dumps(fig, cls=PlotlyJSONEncoder)
