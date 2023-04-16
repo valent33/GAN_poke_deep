@@ -13,14 +13,14 @@
             font-family: 'Pokemon Solid', sans-serif;
             /* Remplacez sans-serif par une police de secours au cas où la police personnalisée ne se charge pas */
             color: #ffc500;
-            font-size: xxx-large;
+            font-size: 70px;
 
         }
         .custom-font2 {
             font-family: 'Pokemon Solid', sans-serif;
             /* Remplacez sans-serif par une police de secours au cas où la police personnalisée ne se charge pas */
             color: #3466AF;
-            font-size: xxx-large;
+            font-size: 70px;
         }
 
         h1 {
@@ -196,16 +196,14 @@
             .then(data => {
                     // Handle response from Flask endpoint
                     if (data.success) {
-                        alert("Form submitted successfully !"); // Show success message
-
                         // Update image URL to refresh image
                         var imageContainerElement = document.getElementById('image-container'); // Replace with your image element ID
                         imageContainerElement.textContent = 'Image URL: ' + data.image_url; // Update URL content; // Update URL content
                         imageContainerElement.src = data.image_url; // Update URL content
                         // insert the img in the image container
                         imageContainerElement.innerHTML = '<img src="' + data.image_url + '?timestamp=' + new Date().getTime() +
-                            '" class="img" alt="Pokemon Image" width="200" height="200">';
-                        var typesContainerElement = document.getElementById('types-container'); // Replace with your types
+                            '" class="img" alt="Pokemon Image" width="300" height="300">';
+                        /*var typesContainerElement = document.getElementById('types-container'); // Replace with your types
                         // the container must be 150px by 150px and center all the content
                         typesContainerElement.style = "width: 200px; height: 200px; display: flex; justify-content: center; flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF";
                         // store the types in a list
@@ -215,16 +213,20 @@
                         // loop through the list, create an html list and add the types to the list
                         for (var i = 0; i < types.length; i++) {
                             typesContainerElement.innerHTML += '<li>' + types[i] + '</li>';
-                        }
+                        }*/
                         // let the user insert the name of the pokemon in the input and register it with a button
                         var nameContainerElement = document.getElementById('registerer-container'); // Replace with your name
                         // the container must be 150px by 150px and make the content space between with padding 15px
-                        nameContainerElement.style = "width: 200px; height: 200px; display: flex; justify-content: space-between; " + "flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF; padding: 15px";
+                        nameContainerElement.style = "width: 300px; height: 300px; display: flex; justify-content: space-between; " + "flex-direction: row; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF; padding: 15px";
                         // Reset the name container
                         nameContainerElement.innerHTML = '';
                         // create a form to insert the name of the pokemon, on submit call the download function
                         nameContainerElement.innerHTML += '<form onsubmit="download(event)"><input type="text" name="name" placeholder="Name" ' + 'class="form-control form-control-sm"><br><input type="submit" value="Register" class="btn btn-block btn-lg" color="ffcb05"></form>';
-
+                        var statsContainerElement = document.getElementById('stats-container'); // Replace with your stats container element ID
+                        //this container must be 300px by 300px
+                        statsContainerElement.style = "width: 300px; height: 300px; display: flex; justify-content: center; flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF";
+                        data = {{ graphJSON|safe }};
+                        Plotly.newPlot(statsContainerElement, data);
                     } else {
                         alert("Form submission failed."); // Show error message
                     }
@@ -236,7 +238,6 @@
         // function to download the image
         function download(event) {
 
-            alert("Download");
             // prevent the form from submitting
             event.preventDefault();
             // get the name of the pokemon
@@ -273,19 +274,26 @@
 </head>
 
 <body>
+
+
+
     <!-- Creare a spacer for the top of the page it will be 5% of the screen -->
     <div style="height: 5vh"></div>
     <!-- use bootstrap to center the title at the top of the page and vertically center it -->
     <div class="container">
             <div class="col-12">
                 <div class="title">
+
                     <h1 class="custom-font">Poke </h1><h1 class="custom-font2">Generator</h1>
+
                 </div>
             </div>
-        </div>
+    </div>
+
+
 
     <!-- Creare a spacer between the title and the form it will be 10% of the screen -->
-    <div style="height: 10vh"></div>
+    <div style="height: 7vh"></div>
 
     <!-- use bootstrap to make a grid of 3 by 6 buttons and a submit button below -->
     <!-- the buttons are pngs buttons from types folder -->
@@ -409,10 +417,10 @@
                         </label>
                     </div>
                 </div>
-                <div style="height: 10vh"></div>
+                <div style="height: 5vh"></div>
 
                 <input type="submit" value="Create your Pokemon" class="btn predict_button_container btn-block btn-lg" color="ffcb05">   <!--btn-block btn-lg-->
-                <div style="height: 10vh"></div>
+                <div style="height: 5vh"></div>
                 <!-- put types container and image container in a flexbox and put them at the center of the page -->
 
 
@@ -420,18 +428,15 @@
     </form>
     <div class="d-flex justify-content-center">
         <!-- stats container -->
-        <div id='chart' class='chart'></div>
-        <script>
-            var data = {{ graphJSON|safe }};
-            Plotly.newPlot('chart', data);
-        </script>
-        <!-- types container -->
-        <div id="types-container" class="types-container" ></div>
+        <div id='stats-container' class='stats-container'></div>
+        <!-- types container
+        <div id="types-container" class="types-container" ></div>-->
         <!-- image container -->
         <div id="image-container" class="image-container" ></div> <!-- Placeholder for image -->
         <!-- registerer container -->
         <div id="registerer-container" class="registerer-container" ></div>
     </div>
+    <div style="height: 10vh"></div>
 </body>
 
 </html>
