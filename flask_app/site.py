@@ -29,13 +29,14 @@ generator = tf.keras.models.load_model('cgenerator_model_final.h5')
 app = Flask(__name__, static_url_path='/static')
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'secret'
+
 # index is called once when the page is loaded
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = PredictionForm()
     filename = 'temp.png'  # Example filename
-    graphJSON = plot_stats([100, 100, 100, 100, 100, 100])
-    return render_template('index.html', form=form, filename=filename, graphJSON=graphJSON)
+    graphJSON = plot_stats([10, 150, 70, 90, 65, 100])
+    return render_template('index.html', form=form, filename=filename, graphjson=graphJSON)
 
 # Create a function to download the image with the name of the pokemon fetched from the form
 #('/download', {
@@ -138,8 +139,11 @@ def submit_form():
         temp_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         # save the image
         tf.keras.preprocessing.image.save_img(temp_file, image[0])
+        global graphJSON
+        graphJSON = plot_stats([100, 100, 100, 100, 105, 100])
+        #print(graphJSON)
         # Return new image URL as JSON response
-        return jsonify({'success': True, 'image_url': filename, 'types': types, 'graphJSON': plot_stats([100, 100, 100, 100, 100, 100])})
+        return jsonify({'success': True, 'image_url': filename, 'types': types, 'graphjson': graphJSON})
 
 
 # Create a function to get jsonify the image filename

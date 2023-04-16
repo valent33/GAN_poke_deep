@@ -193,15 +193,16 @@
                 body: formData
             })
             .then(response => response.json())
-            .then(data => {
+            .then(datas => {
+
                     // Handle response from Flask endpoint
-                    if (data.success) {
+                    if (datas.success) {
                         // Update image URL to refresh image
                         var imageContainerElement = document.getElementById('image-container'); // Replace with your image element ID
-                        imageContainerElement.textContent = 'Image URL: ' + data.image_url; // Update URL content; // Update URL content
-                        imageContainerElement.src = data.image_url; // Update URL content
+                        imageContainerElement.textContent = 'Image URL: ' + datas.image_url; // Update URL content; // Update URL content
+                        imageContainerElement.src = datas.image_url; // Update URL content
                         // insert the img in the image container
-                        imageContainerElement.innerHTML = '<img src="' + data.image_url + '?timestamp=' + new Date().getTime() +
+                        imageContainerElement.innerHTML = '<img src="' + datas.image_url + '?timestamp=' + new Date().getTime() +
                             '" class="img" alt="Pokemon Image" width="300" height="300">';
                         /*var typesContainerElement = document.getElementById('types-container'); // Replace with your types
                         // the container must be 150px by 150px and center all the content
@@ -225,14 +226,19 @@
                         var statsContainerElement = document.getElementById('stats-container'); // Replace with your stats container element ID
                         //this container must be 300px by 300px
                         statsContainerElement.style = "width: 300px; height: 300px; display: flex; justify-content: center; flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF";
-                        data = {{ graphJSON|safe }};
+
+                        // convert datas.graphjson to Object
+                        var data = JSON.parse(datas.graphjson);
                         Plotly.newPlot(statsContainerElement, data);
+                        //data =;
+                        //console.log(data);
+                        //Plotly.newPlot(statsContainerElement, data);
                     } else {
                         alert("Form submission failed."); // Show error message
                     }
             })
             .catch(error => {
-                console.error(error); // Log error to console
+                alert(error); // Log error to console
             });
         }
         // function to download the image
