@@ -26,6 +26,7 @@ class ImageForm(FlaskForm):
     submit = SubmitField('Register')
 
 generator = tf.keras.models.load_model('cgenerator_model_final.h5')
+stats = tf.keras.models.load_model('stats_model.h5')
 app = Flask(__name__, static_url_path='/static')
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'secret'
@@ -138,10 +139,17 @@ def submit_form():
         filename = 'temp.png'
         temp_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         # save the image
-        tf.keras.preprocessing.image.save_img(temp_file, image[0])
+        tf.keras.preprocessing.image.save_img(temp_file, image[0], verbose=0)
+        
+        # stats prediction
+        tmp = stats.predict([image, label], verbose=0)
+        # stats * standard deviation + mean
+        tmp = tmp[0] * np.array([26.03589435, 29.10823332, 29.11150942, 29.54996808, 27.6194045, 27.81956697]) + np.array([68.33193732, 75.51028955, 70.67037331, 70.30717019, 70.31720702, 67.09646906])
+        tmp = tmp.astype(int)
+
         global graphJSON
-        graphJSON = plot_stats([100, 100, 100, 100, 105, 100])
-        #print(graphJSON)
+        graphJSON = plot_stats(tmp)
+
         # Return new image URL as JSON response
         return jsonify({'success': True, 'image_url': filename, 'types': types, 'graphjson': graphJSON})
 
