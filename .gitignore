@@ -1,5 +1,5 @@
 *.png
 *.pyc
-*.h5
+results/
 *.jpg
 *.pkl

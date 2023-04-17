@@ -124,9 +124,8 @@ def plot_n_images(ds, n, class_names, GAN=False, size=128):
         if GAN:
             image = image * 127.5 + 127.5
             image = image.numpy().astype("uint8")
+        print("image shape : ", image[0].shape)
         for i in range(n):
-            print(label[i])
-            print(image[i].shape)
             plot_image(image[i], class_names[int(tf.argmax(tf.reshape(label[i], [-1, 1]), axis=0))], size=size)
 
 def plot_family(pokemon):
