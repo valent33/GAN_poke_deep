@@ -1,5 +1,6 @@
 *.png
 *.pyc
 results/
+AEGAN-keras-master/
 *.jpg
 *.pkl
