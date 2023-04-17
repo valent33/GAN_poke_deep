@@ -1,6 +1,7 @@
-*.png
-*.pyc
+images/
+conor/
 results/
 AEGAN-keras-master/
+*.pyc
 *.jpg
 *.pkl
