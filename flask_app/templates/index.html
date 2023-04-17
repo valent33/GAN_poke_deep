@@ -222,7 +222,7 @@
                         // Reset the name container
                         nameContainerElement.innerHTML = '';
                         // create a form to insert the name of the pokemon, on submit call the download function
-                        nameContainerElement.innerHTML += '<form onsubmit="download(event)"><input type="text" name="name" placeholder="Name" ' + 'class="form-control form-control-sm"><br><input type="submit" value="Register" class="btn btn-block btn-lg" color="ffcb05"></form>';
+                        nameContainerElement.innerHTML += '<form onsubmit="download(event)"><input type="text" name="name" value=' + datas.name + ' ' + 'class="form-control form-control-sm"><br><input type="submit" value="Register" class="btn btn-block btn-lg" color="ffcb05"></form>';
                         var statsContainerElement = document.getElementById('stats-container'); // Replace with your stats container element ID
                         //this container must be 300px by 300px
                         statsContainerElement.style = "width: 300px; height: 300px; display: flex; justify-content: center; flex-direction: column; align-items: center; font-family: 'Pokemon Solid'; font-size: 18px; color: #3466AF";

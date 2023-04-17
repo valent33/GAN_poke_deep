@@ -27,6 +27,7 @@ class ImageForm(FlaskForm):
 
 generator = tf.keras.models.load_model('cgenerator_model_final.h5')
 stats = tf.keras.models.load_model('stats_model.h5')
+name_generator = tf.keras.models.load_model('name_gen_type_stat.h5')
 app = Flask(__name__, static_url_path='/static')
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'secret'
@@ -37,7 +38,8 @@ def index():
     form = PredictionForm()
     filename = 'temp.png'  # Example filename
     graphJSON = plot_stats([10, 150, 70, 90, 65, 100])
-    return render_template('index.html', form=form, filename=filename, graphjson=graphJSON)
+    name = "Name"
+    return render_template('index.html', form=form, filename=filename, graphjson=graphJSON, name=name)
 
 # Create a function to download the image with the name of the pokemon fetched from the form
 #('/download', {
@@ -122,17 +124,11 @@ def submit_form():
         inputs = request.form.getlist('input[]')
         # label to type
         types = label_to_type(inputs)
-        # print the types
-        print(types)
         # Convert the values to floats
         label = np.zeros(18)
         for i in inputs:
             label[int(i)-1] = 1
         label = np.reshape(label, (1, 18))
-        # print the numbers of the labels equal to 1
-        for i in range(len(label[0])):
-            if label[0][i] == 1:
-                print(i+1)
         # generate the image using the GAN model
         image = generator.predict([tf.random.normal(shape=(1, 100)), label])
         # save the image to a temporary file
@@ -143,6 +139,9 @@ def submit_form():
         
         # stats prediction
         tmp = stats.predict([image, label], verbose=0)
+        
+        name = make_name(name_generator, label, tmp)
+
         # stats * standard deviation + mean
         tmp = tmp[0] * np.array([26.03589435, 29.10823332, 29.11150942, 29.54996808, 27.6194045, 27.81956697]) + np.array([68.33193732, 75.51028955, 70.67037331, 70.30717019, 70.31720702, 67.09646906])
         tmp = tmp.astype(int)
@@ -151,7 +150,7 @@ def submit_form():
         graphJSON = plot_stats(tmp)
 
         # Return new image URL as JSON response
-        return jsonify({'success': True, 'image_url': filename, 'types': types, 'graphjson': graphJSON})
+        return jsonify({'success': True, 'image_url': filename, 'types': types, 'graphjson': graphJSON, 'name': name})
 
 
 # Create a function to get jsonify the image filename
@@ -253,6 +252,43 @@ def plot_stats(stats):
     )
     # fig.show()
     return json.dumps(fig, cls=PlotlyJSONEncoder)
+
+
+index_to_char = dict( (i, chr(i+96)) for i in range(1,27))
+index_to_char[0] = ' '
+index_to_char[27] = '.'
+
+def make_name(model, types=np.zeros((1, 18)), stats=np.array([[100, 100, 100, 100, 100, 100]])):
+    name = []
+    x = np.zeros((1, 13, 28))
+    types = np.tile(types, (1, 13, 1))
+    # # concatenatre types with x after char_dim
+    x = np.concatenate((x, types), axis=2)
+    # concatenate stats at the end of x
+    stats = np.tile(stats, (1, 13, 1))
+    x = np.concatenate((x, stats), axis=2)
+    # x = np.expand_dims(x, axis=2)
+    
+    end = False
+    i = 0
+    
+    while end==False:
+        probs = list(model.predict(x, verbose=0)[0,i])
+        probs = probs / np.sum(probs)
+        index = np.random.choice(range(28), p=probs)
+        if i == 13-2:
+            character = '.'
+            end = True
+        else:
+            character = index_to_char[index]
+        name.append(character)
+        x[0, i+1, index] = 1
+        i += 1
+        if character == '.':
+            end = True
+    
+    # print(''.join(name))
+    return ''.join(name)[:-1]
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
