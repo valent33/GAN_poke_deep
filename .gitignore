@@ -1,6 +1,8 @@
-*.png
+images/
+conor/
+results/
+AEGAN-keras-master/
 *.pyc
-*.h5
 *.jpg
 *.pkl
 *.csv
