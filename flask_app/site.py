@@ -258,7 +258,7 @@ index_to_char = dict( (i, chr(i+96)) for i in range(1,27))
 index_to_char[0] = ' '
 index_to_char[27] = '.'
 
-def make_name(model, types=np.zeros((1, 18)), stats=np.array([[100, 100, 100, 100, 100, 100]])):
+def make_name(model, types=np.zeros((1, 18)), stats=np.zeros((1, 6))):
     name = []
     x = np.zeros((1, 13, 28))
     types = np.tile(types, (1, 13, 1))
