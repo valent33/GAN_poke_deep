@@ -5,3 +5,4 @@ AEGAN-keras-master/
 *.pyc
 *.jpg
 *.pkl
+*.csv
