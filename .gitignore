@@ -6,3 +6,5 @@ AEGAN-keras-master/
 *.jpg
 *.pkl
 *.csv
+*.h5
+*.png
