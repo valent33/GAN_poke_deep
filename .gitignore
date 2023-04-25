@@ -2,6 +2,8 @@ images/
 conor/
 results/
 AEGAN-keras-master/
+stable_diffusion/
+flask_app/uploads/
 *.pyc
 *.jpg
 *.pkl
