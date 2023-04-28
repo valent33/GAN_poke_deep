@@ -3,9 +3,14 @@ Pour exécuter l'application principale, aller dans le dossier flask_app et lanc
 Pour avoir la meilleure expérience, il faut installer les polices d'écriture Pokemon Hollow et Pokemon Solid qui se trouvent dans le folder [flask_app/static](https://github.com/valent33/GAN_poke_deep/tree/master/flask_app/static).
 
 Pour l'étude des modèles de GAN, il suffit d'accéder au sous-dossier correspondant et lancer le notebook et/ou regarder les résultats.
+LES DONNEES NE SONT PAS SUR LE GIT (et devraient être chargées dans images/final/).
 Le reste des modèles (génération de statistiques et noms) sont respectivement [stats](https://github.com/valent33/GAN_poke_deep/blob/master/stats.ipynb) et [Model_namegen](https://github.com/valent33/GAN_poke_deep/blob/master/Model_namegen.ipynb).
 
 Le rapport final est à la racine [Poké Generator](https://github.com/valent33/GAN_poke_deep/blob/master/Pok%C3%A9%20Generator.pdf).
+
+![GAN 50 epochs](https://github.com/valent33/GAN_poke_deep/blob/master/GAN/generated_plot_GAN_64.png)
+
+![CGAN 130 epochs](https://github.com/valent33/GAN_poke_deep/blob/master/CGAN/cgenerated_plot_96_e131.png)
 
 Valentin Porchet</br>
 Nathan Amsellem</br>
