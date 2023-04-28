@@ -7,8 +7,8 @@ Le reste des modèles (génération de statistiques et noms) sont respectivement
 
 Le rapport final est à la racine [Poké Generator](https://github.com/valent33/GAN_poke_deep/blob/master/Pok%C3%A9%20Generator.pdf).
 
-Valentin Porchet
-Nathan Amsellem
-Enzo Hoummady
-Yann Suty
-Kyllian Bizot-Pageot
+Valentin Porchet</br>
+Nathan Amsellem</br>
+Enzo Hoummady</br>
+Yann Suty</br>
+Kyllian Bizot-Pageot</br>
